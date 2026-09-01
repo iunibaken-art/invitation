@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Wedding Invitation</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      background: #f8f5f8;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    /* მოსაწვევის ფოტო */
+    .invitation {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .invitation img {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+    }
+
+    /* იასამნების ფენა */
+    #flowers {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .flower {
+      position: absolute;
+      top: -50px;
+      animation: fall linear forwards;
+      opacity: 0;
+      user-select: none;
+    }
+
+    @keyframes fall {
+      0% {
+        transform:
+          translateY(-60px)
+          translateX(0)
+          rotate(0deg);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.9;
+      }
+
+      90% {
+        opacity: 0.9;
+      }
+
+      100% {
+        transform:
+          translateY(110vh)
+          translateX(var(--drift))
+          rotate(var(--rotation));
+        opacity: 0;
+      }
+    }
+
+    /* მუსიკის ღილაკი */
+    #musicButton {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+
+      width: 48px;
+      height: 48px;
+
+      border: none;
+      border-radius: 50%;
+
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 18px rgba(80, 50, 80, 0.18);
+
+      font-size: 21px;
+      cursor: pointer;
+    }
+
+    #musicButton:active {
+      transform: scale(0.94);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- მოსაწვევის ფოტო -->
+  <main class="invitation">
+    <img src="invitation.jpg" alt="Wedding Invitation">
+  </main>
+
+
+  <!-- იასამნების ანიმაცია -->
+  <div id="flowers"></div>
+
+
+  <!-- მუსიკა -->
+  <audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <button id="musicButton" aria-label="Music">
+    🎵
+  </button>
+
+
+  <script>
+
+    /* =========================
+       იასამნების ჩამოცვენა
+       ========================= */
+
+    const flowersContainer = document.getElementById("flowers");
+
+    const flowerSymbols = ["🌸", "💜", "✿", "❀"];
+
+    function createFlower() {
+
+      const flower = document.createElement("span");
+
+      flower.classList.add("flower");
+
+      flower.textContent =
+        flowerSymbols[
+          Math.floor(Math.random() * flowerSymbols.length)
+        ];
+
+      const size = Math.random() * 12 + 10;
+      const left = Math.random() * 100;
+      const duration = Math.random() * 5 + 7;
+      const drift = (Math.random() - 0.5) * 180;
+      const rotation = (Math.random() - 0.5) * 500;
+
+      flower.style.left = left + "%";
+      flower.style.fontSize = size + "px";
+      flower.style.animationDuration = duration + "s";
+      flower.style.setProperty("--drift", drift + "px");
+      flower.style.setProperty("--rotation", rotation + "deg");
+
+      flowersContainer.appendChild(flower);
+
+      setTimeout(() => {
+        flower.remove();
+      }, duration * 1000);
+    }
+
+    /* თავიდანვე რამდენიმე ყვავილი */
+    for (let i = 0; i < 12; i++) {
+      setTimeout(createFlower, i * 400);
+    }
+
+    /* შემდეგ მუდმივად */
+    setInterval(createFlower, 650);
+
+
+    /* =========================
+       მუსიკა
+       ========================= */
+
+    const music = document.getElementById("music");
+    const musicButton = document.getElementById("musicButton");
+
+    music.volume = 0.5;
+
+    function startMusic() {
+      music.play().catch(() => {
+        // ბრაუზერმა ავტომატური ჩართვა დაბლოკა
+      });
+    }
+
+    /* ავტომატურად ვცდილობთ ჩართვას */
+    window.addEventListener("load", () => {
+      startMusic();
+    });
+
+    /* თუ ბრაუზერმა დაბლოკა,
+       პირველი შეხებისას ჩაირთვება */
+    document.addEventListener("click", () => {
+      if (music.paused) {
+        startMusic();
+      }
+    }, { once: true });
+
+
+    /* მუსიკის ღილაკი */
+    musicButton.addEventListener("click", (event) => {
+
+      event.stopPropagation();
+
+      if (music.paused) {
+        music.play();
+        musicButton.textContent = "🔊";
+      } else {
+        music.pause();
+        musicButton.textContent = "🎵";
+      }
+
+    });
+
+  </script>
+
+</body>
+</html>
